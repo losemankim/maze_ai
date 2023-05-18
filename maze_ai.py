@@ -1,7 +1,6 @@
 import pygame
 import numpy as np
 import env
-#인자값받기
 import argparse
 
 
@@ -10,6 +9,7 @@ def start(maze_size,visualize,ep_num,episodes):
     print(visualize)
     maze = env.make_maze(maze_size)
     maze = np.array(maze)
+    #이미지 불러오기
     wall_img=pygame.image.load("images/wall.png")
     player_img=pygame.image.load("images/player.png")
     exit_img=pygame.image.load("images/exit.png")
@@ -17,56 +17,45 @@ def start(maze_size,visualize,ep_num,episodes):
     wall_img=pygame.transform.scale(wall_img,(50,50))
     player_img=pygame.transform.scale(player_img,(50,50))
     exit_img=pygame.transform.scale(exit_img,(50,50))
-
-
     # 미로의 크기
     maze_height = len(maze)
     maze_width = len(maze[0])
     maze[maze_height - 2][maze_width - 1] = 2
-
     # 가능한 행동
     actions = ['up', 'down', 'left', 'right']
-
     # Q 테이블 초기화
     q_table = np.zeros((maze_height, maze_width, len(actions)))
-
     # 하이퍼파라미터 설정
     learning_rate = 0.1
     discount_factor = 0.99
     exploration_rate = 0.1
-    max_exploration_rate = 1.0
-    min_exploration_rate = 0.01
-    exploration_decay_rate = 0.01
     num_episodes = episodes
+    #reward관련변수
     move=0
     prev_move=0
     serched=[]
-    # 초기화
+    # pygame 초기화
     pygame.init()
     clock = pygame.time.Clock()
-
     # 색상 설정
     BLACK = (0, 0, 0)
     WHITE = (255, 255, 255)
     GREEN = (0, 255, 0)
     BLUE = (0, 0, 255)
-
     # 창 크기 설정
     if visualize:
         screen_width = maze_width * 50
         screen_height = maze_height * 50
         screen = pygame.display.set_mode((screen_width, screen_height))
         pygame.display.set_caption("Maze Solver")
-
     # 에이전트 초기 위치
     agent_position = (0, 1)
-
     # 게임 루프
     running = True
     current_episode = 1
-
     while running:
         if visualize:
+            
             if ep_num<=current_episode:            
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
