@@ -33,13 +33,14 @@ def start(maze_size,visualize,ep_num,episodes):
     # 하이퍼파라미터 설정
     learning_rate = 0.1
     discount_factor = 0.99
-    exploration_rate = 0.3
+    exploration_rate = 0.1
     max_exploration_rate = 1.0
     min_exploration_rate = 0.01
     exploration_decay_rate = 0.01
     num_episodes = episodes
     move=0
     prev_move=0
+    serched=[]
     # 초기화
     pygame.init()
     clock = pygame.time.Clock()
@@ -106,8 +107,9 @@ def start(maze_size,visualize,ep_num,episodes):
         else:
             next_position = (agent_position[0], agent_position[1] + 1)
         #이전과 같은 위치에 있을 경우
-
         prev_move=agent_position
+        serched.append(prev_move)
+
         # 벽에 부딪혔을 경우
         if maze[next_position[0]][next_position[1]] == 1:
             next_position = agent_position
@@ -121,9 +123,8 @@ def start(maze_size,visualize,ep_num,episodes):
         # 보상 계산
         if next_position == (maze_height - 2, maze_width - 1):
             reward = 100
-        elif prev_move==next_position:
-            reward=-100
-            print("같은 위치에 있음")
+        elif next_position in serched:
+            reward= -100
         else:
             reward = -1
         
@@ -140,16 +141,10 @@ def start(maze_size,visualize,ep_num,episodes):
             if ep_num<=current_episode:
                 #reward표시
                 font = pygame.font.SysFont('malgungothic', 30)
-                text = font.render("reward"+str(reward), True, GREEN)
+                text = font.render("current_episode"+str(current_episode), True, GREEN)
                 screen.blit(text, (10, 70))
-                #prev_move표시
-                font = pygame.font.SysFont('malgungothic', 30)
-                text = font.render("prev"+str(prev_move), True, GREEN)
-                screen.blit(text, (10, 10))
-                #agent_position표시
-                font = pygame.font.SysFont('malgungothic', 30)
-                text = font.render("agent"+str(agent_position), True, GREEN)
-                screen.blit(text, (10, 40))
+
+
 
 
 
@@ -161,8 +156,13 @@ def start(maze_size,visualize,ep_num,episodes):
             print("Episode", current_episode, "completed")
             current_episode += 1
             agent_position = (0, 1)
+            move=0
+            prev_move=0
+            serched=[]
+            exploration_rate=exploration_rate*0.99
             if visualize:
                 if ep_num<=current_episode:
+                    print(exploration_rate)
                     pygame.time.wait(10)
         
         # 모든 에피소드가 완료되면 종료
