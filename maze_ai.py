@@ -2,10 +2,12 @@ import pygame
 import numpy as np
 import env
 import argparse
+import calculate
 
 class Maze_ai():
     def __init__(self,maze_size,view_episode,visualize,episodes):
         self.maze = np.array(env.make_maze(maze_size))
+
         self.wall_img=pygame.image.load("images/wall.png")
         self.player_img=pygame.image.load("images/player.png")
         self.exit_img=pygame.image.load("images/exit.png")
@@ -31,7 +33,11 @@ class Maze_ai():
         self.visualize=visualize
         self.view_episode=view_episode
         self.maze_size=maze_size
-        self.start()
+        self.calculate_shortest_path=calculate.Calculate(self.maze)
+        self.shortest_path=self.calculate_shortest_path.return_shortest_path()+1
+        self.end_ep=self.start()
+        print("Shortest Path:", self.shortest_path)
+        print("End Episode:", self.end_ep)
     def start(self):   
         # pygame 초기화
         pygame.init()
@@ -138,10 +144,17 @@ class Maze_ai():
                 print("Episode", current_episode, "completed")
                 current_episode += 1
                 agent_position = (0, 1)
+                print(self.move)
+                if self.shortest_path==self.move:
+                    print("최단경로입니다")
+                    return current_episode
                 self.move=0
+                print(self.shortest_path)
+                
                 prev_move=0
                 serched=[]
                 self.exploration_rate=self.exploration_rate*0.99
+               
                 if self.visualize:
                     if self.view_episode<=current_episode:
                         print(self.exploration_rate)
