@@ -105,11 +105,19 @@ class Maze_ai():
 
             # 벽에 부딪혔을 경우
             if self.maze[next_position[0]][next_position[1]] == 1:
+                if self.visualize:
+                    if self.view_episode<=current_episode:
+                        font=pygame.font.Font(None, 50)
+                        text=font.render("Fail",True,WHITE)
+                        screen.blit(text,(next_position[1]*50,next_position[0]*50))
+                
                 next_position = agent_position
-                reward = -100
+                reward = -1000
             if self.maze[next_position[0]][next_position[1]] == 2:
                 agent_position = next_position
-            if self.move>100:
+
+            if self.move>self.shortest_path:
+
                 reward=-100
 
             
@@ -117,6 +125,12 @@ class Maze_ai():
             if next_position == (self.maze_height - 2, self.maze_width - 1):
                 reward = 100
             elif next_position in self.serched:
+                if self.visualize:
+                    if self.view_episode<=current_episode:
+                        font=pygame.font.Font(None, 50)
+                        text=font.render("Fail",True,WHITE)
+                        screen.blit(text,(next_position[1]*50,next_position[0]*50))
+                
                 reward= -100
             else:
                 reward = -1
@@ -136,6 +150,12 @@ class Maze_ai():
                     font = pygame.font.SysFont('malgungothic', 30)
                     text = font.render("current_episode"+str(current_episode), True, GREEN)
                     screen.blit(text, (10, 70))
+                    font = pygame.font.SysFont('malgungothic', 30)
+                    text = font.render("move"+str(self.move), True, GREEN)
+                    screen.blit(text, (10, 10))
+                    font = pygame.font.SysFont('malgungothic', 30)
+                    text = font.render("action"+str(action), True, GREEN)
+                    screen.blit(text, (10, 40))
                     pygame.display.flip()
                     clock.tick(10)#
             
@@ -145,6 +165,9 @@ class Maze_ai():
                 current_episode += 1
                 agent_position = (0, 1)
                 print(self.move)
+                if self.shortest_path+1>=self.move:
+                    self.visualize=True
+                    self.view_episode=current_episode
                 if self.shortest_path==self.move:
                     print("최단경로입니다")
                     return current_episode
@@ -152,7 +175,7 @@ class Maze_ai():
                 print(self.shortest_path)
                 
                 prev_move=0
-                serched=[]
+                self.serched=[]
                 self.exploration_rate=self.exploration_rate*0.99
                
                 if self.visualize:
