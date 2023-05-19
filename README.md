@@ -4,6 +4,16 @@ python 강화학습
 >## 실행예시
 >python maze_ai.py --maze_size=5 --visualize=True --episode=100000 --view_episode=9000
 
+>## 인자값 설명
+
+>--maze_size=5 미로의 크기
+
+>--visualize=True 시각화
+
+>--episode=10000 에피소드 개수
+
+>--view_episode=9000 eg)9000부터 ~10000까지의 에피소드를 전부보여줌
+
 >## 사용된 라이브러리
 >numpy,pygame,argparse,random
 
