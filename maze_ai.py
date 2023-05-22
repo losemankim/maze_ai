@@ -29,6 +29,7 @@ class Maze_ai():
         #reward관련변수
         self.move=0
         self.prev_move=0
+        self.failed=0
         self.serched=[]# 미로 설정
         self.visualize=visualize
         self.view_episode=view_episode
@@ -89,6 +90,7 @@ class Maze_ai():
                 
             self.move+=1
             action = self.actions[action_index]
+
             
             # 에이전트 이동
             if action == 'up':
@@ -110,6 +112,8 @@ class Maze_ai():
                         font=pygame.font.Font(None, 50)
                         text=font.render("Fail",True,WHITE)
                         screen.blit(text,(next_position[1]*50,next_position[0]*50))
+                        self.failed+=1
+
                 
                 next_position = agent_position
                 reward = -1000
@@ -117,7 +121,6 @@ class Maze_ai():
                 agent_position = next_position
 
             if self.move>self.shortest_path:
-
                 reward=-100
 
             
@@ -130,10 +133,7 @@ class Maze_ai():
                         font=pygame.font.Font(None, 50)
                         text=font.render("Fail",True,WHITE)
                         screen.blit(text,(next_position[1]*50,next_position[0]*50))
-                
-                reward= -100
-            else:
-                reward = -1
+                reward= -10000
             
             # Q 테이블 업데이트
             self.q_table[agent_position][action_index] += self.learning_rate * (
@@ -156,6 +156,8 @@ class Maze_ai():
                     font = pygame.font.SysFont('malgungothic', 30)
                     text = font.render("action"+str(action), True, GREEN)
                     screen.blit(text, (10, 40))
+                    text=font.render("Failed:"+str(self.failed),True,WHITE)
+                    screen.blit(text,(10,100))
                     pygame.display.flip()
                     clock.tick(10)#
             
@@ -164,19 +166,23 @@ class Maze_ai():
                 print("Episode", current_episode, "completed")
                 current_episode += 1
                 agent_position = (0, 1)
+                self.failed=0
                 print(self.move)
                 if self.shortest_path+1>=self.move:
-                    self.visualize=True
-                    self.view_episode=current_episode
-                if self.shortest_path==self.move:
-                    print("최단경로입니다")
-                    return current_episode
+                    self.exploration_rate=0
+                #     self.visualize=True
+                #     self.view_episode=current_episode
+                # if self.shortest_path==self.move:
+                #     print("최단경로입니다")
+                #     return current_episode
+                else:
+                    self.exploration_rate=self.exploration_rate*0.99
                 self.move=0
                 print(self.shortest_path)
                 
                 prev_move=0
                 self.serched=[]
-                self.exploration_rate=self.exploration_rate*0.99
+                
                
                 if self.visualize:
                     if self.view_episode<=current_episode:
