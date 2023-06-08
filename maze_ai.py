@@ -49,7 +49,7 @@ class Maze_ai():
         GREEN = (0, 255, 0)
         BLUE = (0, 0, 255)
         # 창 크기 설정
-        if self.visualize:
+        if self.visualize==True:
             screen_width = self.maze_width * 50
             screen_height = self.maze_height * 50
             screen = pygame.display.set_mode((screen_width, screen_height))
@@ -203,5 +203,12 @@ if __name__ == '__main__':
     paser.add_argument('--visualize',type=bool,default=False)
     paser.add_argument('--episode',type=int,default=1000)
     args=paser.parse_args()
+    #useage = python maze_ai.py --maze_size 9 --view_episode 900 --visualize true --episode 1000
+    if args.maze_size<3:
+        print("maze_size는 3이상이어야 합니다")
+    else:
+        if args.view_episode>args.episode:
+            print("view_episode는 episode보다 작아야 합니다")
+    
 
     Maze_ai(args.maze_size,args.view_episode,args.visualize,args.episode)
